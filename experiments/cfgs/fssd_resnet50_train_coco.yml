@@ -10,7 +10,7 @@ MODEL:
   ASPECT_RATIOS: [[1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2], [1, 2]]
 
 TRAIN:
-  MAX_EPOCHS: 100
+  MAX_EPOCHS: 1000
   CHECKPOINTS_EPOCHS: 1
   BATCH_SIZE: 28
   TRAINABLE_SCOPE: 'base,norm,extras,transforms,pyramids,loc,conf'
@@ -40,7 +40,7 @@ POST_PROCESS:
 
 DATASET:
   DATASET: 'coco'
-  DATASET_DIR: './data/COCO'
+  DATASET_DIR: '/mnt/nvme0n1/COCO'
   TRAIN_SETS: [['2017', 'train']]
   TEST_SETS:  [['2017', 'val']]
   PROB: 0.6

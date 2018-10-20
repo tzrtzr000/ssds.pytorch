@@ -42,7 +42,9 @@ class Solver(object):
         # Build model
         print('===> Building model')
         self.model, self.priorbox = create_model(cfg.MODEL)
-        self.priors = Variable(self.priorbox.forward(), volatile=True)
+        with torch.no_grad():
+            self.priors = Variable(self.priorbox.forward())
+        # self.priors = Variable(self.priorbox.forward(), volatile=True)
         self.detector = Detect(cfg.POST_PROCESS, self.priors)
 
         # Utilize GPUs for computation
@@ -53,8 +55,8 @@ class Solver(object):
             self.model.cuda()
             self.priors.cuda()
             cudnn.benchmark = True
-            # if torch.cuda.device_count() > 1:
-                # self.model = torch.nn.DataParallel(self.model).module
+            if torch.cuda.device_count() > 1:
+                self.model = torch.nn.DataParallel(self.model).module
 
         # Print the model architecture and parameters
         print('Model architectures:\n{}\n'.format(self.model))
@@ -476,9 +478,13 @@ class Solver(object):
             img = dataset.pull_image(i)
             scale = [img.shape[1], img.shape[0], img.shape[1], img.shape[0]]
             if use_gpu:
-                images = Variable(dataset.preproc(img)[0].unsqueeze(0).cuda(), volatile=True)
+                with torch.no_grad():
+                    images = Variable(dataset.preproc(img)[0].unsqueeze(0).cuda())
+                    # images = Variable(dataset.preproc(img)[0].unsqueeze(0).cuda(), volatile=True)
             else:
-                images = Variable(dataset.preproc(img)[0].unsqueeze(0), volatile=True)
+                with torch.no_grad():
+                    images = Variable(dataset.preproc(img)[0].unsqueeze(0))
+                    # images = Variable(dataset.preproc(img)[0].unsqueeze(0), volatile=True)
 
             _t.tic()
             # forward
